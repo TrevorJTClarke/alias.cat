@@ -1,0 +1,2 @@
+cargo:rustc-env=TYPENUM_BUILD_CONSTS=/home/tc/Code/near/nearactor/contracts/target/wasm32-unknown-unknown/release/build/typenum-d3f194d760df4399/out/consts.rs
+cargo:rustc-env=TYPENUM_BUILD_OP=/home/tc/Code/near/nearactor/contracts/target/wasm32-unknown-unknown/release/build/typenum-d3f194d760df4399/out/op.rs
