@@ -1,6 +1,6 @@
 <div align="center">
   <h1>
-    NEARACTOR
+    Alias.cat
   </h1>
   <p>
   Account Images... Decentralized :eyes:
@@ -16,7 +16,7 @@ Run:
 ## Testing
 To test run:
 ```bash
-cargo test --package actor -- --nocapture
+cargo test --package alias -- --nocapture
 ```
 
 ## Changelog

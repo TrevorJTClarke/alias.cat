@@ -1,2 +1,2 @@
-# nearactor
+# Alias.cat
 Decentralize Profile
