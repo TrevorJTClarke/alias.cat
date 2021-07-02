@@ -4,7 +4,7 @@
     <div v-if="accountId" class="flex items-center">
       <div class="relative inline-block text-left">
         <div>
-          <button type="button" @click.prevent="toggleAccountMenu" class="inline-flex justify-center w-full border border-gray-300 dark:border-gray-700 shadow-sm px-4 py-2 bg-opacity-0 text-sm font-bold text-gray-700 dark:text-gray-200 focus:outline-none" id="options-menu" aria-haspopup="true" aria-expanded="true">
+          <button type="button" @click.prevent="toggleAccountMenu" class="inline-flex justify-center w-full rounded-md border border-gray-300 dark:border-gray-700 shadow-sm px-4 py-2 bg-opacity-0 text-sm font-bold text-gray-700 dark:text-gray-200 focus:outline-none" id="options-menu" aria-haspopup="true" aria-expanded="true">
             <svg class="-ml-1 mr-2 h-5 w-5 stroke-current text-gray-800 dark:text-gray-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
             </svg>
@@ -15,7 +15,7 @@
           </button>
         </div>
 
-        <div class="origin-top-right absolute right-0 mt-2 w-56 shadow-lg bg-white dark:bg-manatee-1000 font-bold" :class="{hidden: !accountMenuActive}">
+        <div class="origin-top-right absolute right-0 mt-2 w-56 shadow-lg bg-white font-bold" :class="{hidden: !accountMenuActive}">
           <div @click="accountMenuActive = false" class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
             <router-link to="/settings" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-manatee-900 dark:hover:text-gray-50" role="menuitem">Settings</router-link>
             <button @click.prevent="logout" type="submit" class="block w-full text-left px-4 py-2 text-sm font-bold text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900 dark:text-gray-300 dark:hover:bg-turquoise-900 dark:hover:text-gray-50" role="menuitem">
