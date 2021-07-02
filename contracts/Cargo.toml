@@ -1,10 +1,7 @@
 [workspace]
 members = [
-  "actor"
+  "alias"
 ]
-
-#[dev-dependencies]
-#near-sdk = "3.1.0"
 
 [profile.release]
 codegen-units = 1

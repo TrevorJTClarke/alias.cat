@@ -30,7 +30,7 @@ app.use(VueNear, {
   env,
   config: {
     appTitle: '',
-    contractName: contractIds.registrar
+    contractName: contractIds.alias
   }
 })
 

@@ -3,7 +3,7 @@
     <div class="container flex justify-between py-4 mx-auto">
       <router-link to="/" class="w-24">
         <!-- <Logo /> -->
-        NEARACTOR
+        ALIAS.CAT | NEAR.CAT
       </router-link>
       <div class="flex justify-between gap-8 font-bold">
         <!-- <router-link to="/auctions" class="flex p-2">

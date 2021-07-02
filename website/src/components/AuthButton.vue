@@ -36,7 +36,7 @@
 
 <script>
 import { ref } from 'vue'
-import NearToken from '@/components/ui/NearToken'
+import NearToken from '@/components/NearToken'
 
 export default {
   components: {

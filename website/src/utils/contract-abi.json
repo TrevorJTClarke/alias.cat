@@ -1,52 +1,14 @@
 {
   "testnet": {
-    "escrow": "escrow.nym.testnet",
-    "registrar": "registrar.nym.testnet"
+    "alias": "alias.in.testnet"
   },
   "mainnet": {
-    "escrow": "escrow.nym.near",
-    "registrar": "registrar.nym.near"
+    "alias": "alias.cdn.near"
   },
   "abis": {
-    "deed": {
-      "viewMethods": [],
-      "changeMethods": [
-        "new",
-        "revert_ownership",
-        "transfer_ownership"
-      ]
-    },
-    "escrow": {
-      "viewMethods": [
-        "in_escrow"
-      ],
-      "changeMethods": [
-        "new",
-        "register",
-        "revert_title",
-        "close_escrow"
-      ]
-    },
-    "registrar": {
-      "viewMethods": [
-        "hash",
-        "get_auction_by_id"
-      ],
-      "changeMethods": [
-        "new",
-        "create",
-        "bid",
-        "reveal",
-        "cancel_auction",
-        "finalize_auction"
-      ]
-    },
-    "transfer_owner": {
-      "viewMethods": [],
-      "changeMethods": [
-        "new",
-        "delete_self"
-      ]
+    "alias": {
+      "viewMethods": ["get"],
+      "changeMethods": ["set"]
     }
   }
 }
