@@ -43,7 +43,7 @@
           <div class="space-y-2">
             <RadioGroupOption
               as="template"
-              v-for="plan in plans"
+              v-for="plan in sizes"
               :key="plan.name"
               :value="plan"
               v-slot="{ active, checked }"
@@ -77,7 +77,7 @@
                         :class="checked ? 'text-green-100' : 'text-gray-500'"
                         class="inline"
                       >
-                        <span>Dimensions {{ plan.dim }}</span>
+                        <span>Dimensions {{ plan.dim }}x{{ plan.dim }}</span>
                         <span> &middot; </span>
                         <span>Cost Basis {{ plan.cost }}</span>
                       </RadioGroupDescription>
@@ -168,7 +168,7 @@
       <div class="w-1/2">
         <div class="mt-8 flex justify-end lg:mt-0 lg:flex-shrink-0">
           <div class="inline-flex rounded-md shadow">
-            <button class="inline-flex items-center justify-center px-8 py-4 border border-transparent text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700">
+            <button @click.prevent="submit" class="inline-flex items-center justify-center px-8 py-4 border border-transparent text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700">
               Save Profile
             </button>
           </div>
@@ -181,6 +181,7 @@
 
 <script>
 // import Logo from '../components/Logo'
+import { getContractAbi } from '../utils/config'
 import { ChevronUpIcon } from '@heroicons/vue/outline'
 import {
   RadioGroup,
@@ -193,28 +194,29 @@ import {
 import { ColorPicker } from 'vue-color-kit'
 // import 'vue-color-kit/dist/vue-color-kit.css'
 
-const plans = [
+const sizes = [
   {
     name: 'Extra Small',
-    dim: '16x16',
+    dim: 16,
     cost: 1024,
     pixels: 16,
+    amount: '266000000000000000000000',
   },
   {
     name: 'Small',
-    dim: '32x32',
+    dim: 32,
     cost: 4096,
     pixels: 24,
   },
   {
     name: 'Medium',
-    dim: '64x64',
+    dim: 64,
     cost: 16384,
     pixels: 32,
   },
   {
     name: 'Large',
-    dim: '128x128',
+    dim: 128,
     cost: 65536,
     pixels: 48,
   },
@@ -234,17 +236,22 @@ export default {
 
   data() {
     return { 
-      selected: plans[0], 
-      plans,
-      color: '#59c7f9',
+      selected: sizes[0], 
+      sizes,
+      icon: null,
+      color: '#f9f9f9',
+      initials: '',
       hasFile: false,
-      imgData: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60'
+      imgData: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60',
+      contractSpec: null,
+      contract: null,
     }
   },
 
   computed: {
     size() {
-      return 32
+      if (this.icon) return Math.sqrt(this.icon.length) / 2
+      return this.selected.dim
     },
     pixelSize() {
       return 1
@@ -269,9 +276,7 @@ export default {
       var file = e.target.files[0];
       var canvas = document.getElementById("canvas");
       var context = canvas.getContext("2d");
-      // var canvas2 = document.getElementById("canvas2");
-      // var context2 = canvas2.getContext("2d");
-      var pixelSize = this.pixelSize;
+      this.icon = null
 
       var fr = new FileReader();
       fr.onload = () => {
@@ -283,24 +288,76 @@ export default {
 
           let imgData = context.getImageData(0, 0, canvas.width, canvas.height);
           let data = Array.from(imgData.data);
-          console.log('data', JSON.stringify(data));
-
-          // for(var row = 0; row < canvas2.width; ++row) {
-          //   for(var column = 0; column < canvas2.width; ++column) {
-          //     const tmpRgba = data.splice(0,4);
-          //     context2.fillStyle = `rgba(${tmpRgba[0]},${tmpRgba[1]},${tmpRgba[2]},${tmpRgba[3]})`;
-          //     context2.fillRect(column * pixelSize, row * pixelSize, pixelSize, pixelSize);
-          //   }
-          // }
+          console.log('data', data.length);
+          this.icon = data;
         };
         img.src = fr.result;
       };
       fr.readAsDataURL(file);
-    }
+    },
+
+    async submit() {
+      if (!this.icon || !this.contract) return
+      console.log('this.contract',this.contract);
+      const content = {
+        icon: this.icon,
+        color: this.color === '#f9f9f9' ? null : this.color,
+        // initials: this.initials ? this.initials : `${this.$near.user.accountId}`.substring(0, 2),
+      }
+
+      // Send to NEAR
+      const res = await this.contract.set(
+        content,
+        '300000000000000',
+        this.selected.amount,
+      )
+      console.log('RES', res);
+
+      // Remove the fields data
+      // this.to_account_id = ''
+    },
+
+    async loadContract() {
+      if (this.contract) return
+      console.log('CONTRACT:', this.$near.config.contractName)
+      this.contract = await this.$near.getContractInstance(
+        this.$near.config.contractName,
+        this.contractSpec,
+      )
+    },
+
+    async loadData() {
+      if (!this.contract) return
+      const res = await this.contract.get({ id: `${this.$near.user.accountId}` })
+      if (!res || !res.icon) return
+      this.hasFile = true
+      let data = res.icon;
+      this.icon = [].concat(res.icon);
+      var pixelSize = this.pixelSize;
+      var canvas = document.getElementById("canvas");
+      var context = canvas.getContext("2d");
+
+      // read the sizes, and assign found data
+      this.sizes.forEach(size => {
+        if (size.cost === res.icon.length) this.selected = size
+      })
+
+      for(var row = 0; row < canvas.width; ++row) {
+        for(var column = 0; column < canvas.width; ++column) {
+          const tmpRgba = data.splice(0,4);
+          context.fillStyle = `rgba(${tmpRgba[0]},${tmpRgba[1]},${tmpRgba[2]},${tmpRgba[3]})`;
+          context.fillRect(column * pixelSize, row * pixelSize, pixelSize, pixelSize);
+        }
+      }
+
+      this.imgData = canvas.toDataURL("image/png");
+    },
   },
 
-  mounted () {
-    console.log(this.$near)
+  async mounted() {
+    this.contractSpec = getContractAbi('alias')
+    await this.loadContract()
+    await this.loadData()
   }
 }
 </script>

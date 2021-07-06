@@ -8,7 +8,7 @@
   "abis": {
     "alias": {
       "viewMethods": ["get"],
-      "changeMethods": ["set"]
+      "changeMethods": ["set", "del"]
     }
   }
 }

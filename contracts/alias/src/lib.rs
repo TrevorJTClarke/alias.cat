@@ -126,6 +126,13 @@ impl Alias {
     }
 
     /// ```bash
+    /// near call alias.in.testnet del --accountId your_account.testnet
+    /// ```
+    pub fn del(&mut self) {
+        self.accounts.remove(&env::signer_account_id());
+    }
+
+    /// ```bash
     /// near view alias.in.testnet get '{"id":"your_account.testnet"}'
     /// ```
     pub fn get(&self, id: ValidAccountId) -> Option<Account> {
