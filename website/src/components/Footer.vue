@@ -1,6 +1,6 @@
 <template>
   <div class="font-sans text-gray-800 bg-gray-200 text-center py-2">
-    <div class="container mx-auto">TrevorJTClarke &middot; © {{year}}</div>
+    <div class="container mx-auto">Layer Y DAO &middot; © {{year}}</div>
   </div>
 </template>
 

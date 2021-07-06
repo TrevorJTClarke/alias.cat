@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-50 text-shadow-400">
+  <div class="bg-gray-50 text-shadow-400 flex flex-col">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
       <div class="lg:text-center">
         <h2 class="text-6xl text-green-600 font-semibold tracking-wide uppercase">👩‍🎨</h2>
@@ -11,30 +11,16 @@
         </p>
       </div>
     </div>
-    <!-- <div class="container flex flex-col justify-center h-screen p-4 mx-auto" style="max-height: 90vh">
-      <div class="mx-auto w-1/3">
-        Open image
-
-         <input type="file" @change="logFile">
-      </div>
-      <div class="mx-auto w-1/3">
-        HI canvas
-        <canvas id="canvas" :width="size" :height="size" class="alias" />
-      </div>
-      <div class="mx-auto w-1/3">
-        canvas 2
-        <canvas id="canvas2" :width="size" :height="size" class="alias" />
-      </div>
-    </div> -->
     <div class="container flex p-4 mx-auto">
       <div class="w-1/2 mr-12">
         <div class="h-full mt-1 flex justify-center px-6 pt-5 pb-6 border-4 border-gray-300 border-dashed rounded-2xl">
           <div class="my-auto space-y-1 text-center">
-            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+            <svg v-if="!hasFile" class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
               <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
-            <div class="flex text-sm text-gray-600">
-              <label for="file-upload" class="relative cursor-pointer bg-transparent rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-green-500">
+            <canvas class="mx-auto text-gray-400" :class="{'w-0 h-0 invisible overflow-hidden': !hasFile, 'visible alias mb-6 rounded-lg': hasFile}" id="canvas" :width="size" :height="size" />
+            <div class="flex justify-center text-sm text-gray-600">
+              <label for="file-upload" class="relative cursor-pointer underline bg-transparent rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-green-500">
                 <span>Upload a file</span>
                 <input id="file-upload" name="file-upload" type="file" @change="logFile" class="sr-only" />
               </label>
@@ -74,7 +60,7 @@
                 <div class="flex items-center justify-between w-full">
                   <div class="flex-none mr-8">
                     <div class="flex m-auto w-12">
-                      <img class="mx-auto rounded-full" style="max-width: 48px;" :width="plan.pixels" :height="plan.pixels" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60" alt="" />
+                      <img class="mx-auto rounded-full" style="max-width: 48px;" :width="plan.pixels" :height="plan.pixels" :src="imgData" alt="" />
                     </div>
                   </div>
                   <div class="flex-1 items-center">
@@ -122,16 +108,90 @@
         </RadioGroup>
       </div>
     </div>
+
+    <div class="container flex flex-col p-4 mx-auto my-12">
+      <Disclosure v-slot="{ open }">
+        <DisclosureButton
+          class="flex justify-between w-full px-4 py-2 text-sm font-medium text-left text-gray-900 bg-gray-100 rounded-lg hover:bg-gray-200 focus:outline-none focus-visible:ring focus-visible:ring-gray-500 focus-visible:ring-opacity-75"
+        >
+          <span>Advanced</span>
+          <ChevronUpIcon
+            :class="open ? 'transform rotate-180' : ''"
+            class="w-5 h-5 text-gray-500"
+          />
+        </DisclosureButton>
+        <transition
+          enter-active-class="transition duration-100 ease-out"
+          enter-from-class="transform scale-95 opacity-0"
+          enter-to-class="transform scale-100 opacity-100"
+          leave-active-class="transition duration-75 ease-out"
+          leave-from-class="transform scale-100 opacity-100"
+          leave-to-class="transform scale-95 opacity-0"
+        >
+          <DisclosurePanel class="px-4 pt-4 pb-2 flex text-sm text-gray-500">
+            <div class="w-1/2 mr-12">
+              &nbsp;
+            </div>
+            <div class="w-1/2">
+              <div class="mb-4">
+                <legend class="text-base font-medium text-gray-900">Your Initials</legend>
+                <p class="text-sm text-gray-500">Your initials are 2 letters that best represent your name, and display when no image is available.</p>
+              </div>
+              <input type="text" name="first-name" id="first-name" autocomplete="given-name" class="mt-1 focus:ring-green-500 focus:border-green-500 block w-1/2 p-4 shadow-sm sm:text-sm border-gray-300 rounded-md" />
+            </div>
+            <!-- <div class="w-1/2">
+              <div class="mb-4">
+                <legend class="text-base font-medium text-gray-900">Favorite Color</legend>
+                <p class="text-sm text-gray-500">This color will load for themeing on dApps.</p>
+              </div>
+              <div class="w-12 h-12 rounded-lg">
+                &nbsp;
+              </div>
+              <ColorPicker
+                theme="light"
+                :color="color"
+                :sucker-hide="true"
+              />
+            </div> -->
+          </DisclosurePanel>
+        </transition>
+      </Disclosure>
+    </div>
+
+    <div class="container flex p-4 mx-auto">
+      <div class="w-1/2 mr-12">
+        <h2 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+          <span class="block">Changes all finished?</span>
+          <span class="block text-green-600">Store them directly on the blockchain</span>
+        </h2>
+      </div>
+      <div class="w-1/2">
+        <div class="mt-8 flex justify-end lg:mt-0 lg:flex-shrink-0">
+          <div class="inline-flex rounded-md shadow">
+            <button class="inline-flex items-center justify-center px-8 py-4 border border-transparent text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700">
+              Save Profile
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
 <script>
 // import Logo from '../components/Logo'
+import { ChevronUpIcon } from '@heroicons/vue/outline'
 import {
   RadioGroup,
   RadioGroupLabel,
   RadioGroupOption,
+  Disclosure,
+  DisclosureButton,
+  DisclosurePanel,
 } from '@headlessui/vue'
+import { ColorPicker } from 'vue-color-kit'
+// import 'vue-color-kit/dist/vue-color-kit.css'
 
 const plans = [
   {
@@ -144,29 +204,41 @@ const plans = [
     name: 'Small',
     dim: '32x32',
     cost: 4096,
-    pixels: 32,
+    pixels: 24,
   },
   {
     name: 'Medium',
     dim: '64x64',
     cost: 16384,
-    pixels: 64,
+    pixels: 32,
   },
   {
     name: 'Large',
     dim: '128x128',
     cost: 65536,
-    pixels: 128,
+    pixels: 48,
   },
 ]
 
 export default {
-  components: { RadioGroup, RadioGroupLabel, RadioGroupOption },
+  components: {
+    ChevronUpIcon,
+    ColorPicker,
+    RadioGroup, 
+    RadioGroupLabel, 
+    RadioGroupOption,
+    Disclosure,
+    DisclosureButton,
+    DisclosurePanel,
+  },
 
   data() {
     return { 
       selected: plans[0], 
-      plans
+      plans,
+      color: '#59c7f9',
+      hasFile: false,
+      imgData: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60'
     }
   },
 
@@ -180,31 +252,46 @@ export default {
   },
 
   methods: {
+    changeColor(color) {
+      const { r, g, b, a } = color.rgba
+      this.color = `rgba(${r}, ${g}, ${b}, ${a})`
+    },
+    openSucker(isOpen) {
+      if (isOpen) {
+        // ... canvas be created
+        // this.suckerCanvas = canvas
+        // this.suckerArea = [x1, y1, x2, y2]
+      } else {
+        // this.suckerCanvas && this.suckerCanvas.remove
+      }
+    },
     logFile(e) {
       var file = e.target.files[0];
       var canvas = document.getElementById("canvas");
       var context = canvas.getContext("2d");
-      var canvas2 = document.getElementById("canvas2");
-      var context2 = canvas2.getContext("2d");
+      // var canvas2 = document.getElementById("canvas2");
+      // var context2 = canvas2.getContext("2d");
       var pixelSize = this.pixelSize;
 
       var fr = new FileReader();
-      fr.onload = function(){
+      fr.onload = () => {
         var img = new Image();
-        img.onload = function(){
+        this.hasFile = true;
+        img.onload = () => {
           context.drawImage(img,0,0,canvas.width,canvas.height);
+          this.imgData = canvas.toDataURL("image/png");
 
           let imgData = context.getImageData(0, 0, canvas.width, canvas.height);
           let data = Array.from(imgData.data);
           console.log('data', JSON.stringify(data));
 
-          for(var row = 0; row < canvas2.width; ++row) {
-            for(var column = 0; column < canvas2.width; ++column) {
-              const tmpRgba = data.splice(0,4);
-              context2.fillStyle = `rgba(${tmpRgba[0]},${tmpRgba[1]},${tmpRgba[2]},${tmpRgba[3]})`;
-              context2.fillRect(column * pixelSize, row * pixelSize, pixelSize, pixelSize);
-            }
-          }
+          // for(var row = 0; row < canvas2.width; ++row) {
+          //   for(var column = 0; column < canvas2.width; ++column) {
+          //     const tmpRgba = data.splice(0,4);
+          //     context2.fillStyle = `rgba(${tmpRgba[0]},${tmpRgba[1]},${tmpRgba[2]},${tmpRgba[3]})`;
+          //     context2.fillRect(column * pixelSize, row * pixelSize, pixelSize, pixelSize);
+          //   }
+          // }
         };
         img.src = fr.result;
       };
@@ -220,8 +307,10 @@ export default {
 
 <style scoped>
 .alias {
-  width: 128px;
-  height: 128px;
+  width: 256px;
+  height: 256px;
   image-rendering: crisp-edges;
 }
+
+.hu-color-picker{padding:10px;background:#1d2024;border-radius:4px;box-shadow:0 0 16px 0 rgba(0,0,0,.16);z-index:1}.hu-color-picker.light{background:#f7f8f9}.hu-color-picker.light .color-show .sucker{background:#eceef0}.hu-color-picker.light .color-type .name{background:#e7e8e9}.hu-color-picker.light .color-type .value{color:#666;background:#eceef0}.hu-color-picker.light .colors.history{border-top:1px solid #eee}.hu-color-picker canvas{vertical-align:top}.hu-color-picker .color-set{display:flex}.hu-color-picker .color-show{margin-top:8px;display:flex}.saturation{position:relative;cursor:pointer}.saturation .slide{position:absolute;left:100px;top:0;width:10px;height:10px;border-radius:50%;border:1px solid #fff;box-shadow:0 0 1px 1px rgba(0,0,0,.3);pointer-events:none}.color-alpha{position:relative;margin-left:8px;cursor:pointer}.color-alpha .slide{position:absolute;left:0;top:100px;width:100%;height:4px;background:#fff;box-shadow:0 0 1px 0 rgba(0,0,0,.3);pointer-events:none}.sucker{width:30px;fill:#9099a4;background:#2e333a;cursor:pointer;transition:all .3s}.sucker.active,.sucker:hover{fill:#1593ff}.hue{position:relative;margin-left:8px;cursor:pointer}.hue .slide{position:absolute;left:0;top:100px;width:100%;height:4px;background:#fff;box-shadow:0 0 1px 0 rgba(0,0,0,.3);pointer-events:none}.colors{padding:0;margin:0}.colors.history{margin-top:10px;border-top:1px solid #2e333a}.colors .item{position:relative;width:16px;height:16px;margin:10px 0 0 10px;border-radius:3px;box-sizing:border-box;vertical-align:top;display:inline-block;transition:all .1s;cursor:pointer}.colors .item:nth-child(8n+1){margin-left:0}.colors .item:hover{transform:scale(1.4)}.colors .item .alpha{height:100%;border-radius:4px}.colors .item .color{position:absolute;left:0;top:0;width:100%;height:100%;border-radius:3px}.color-type{display:flex;margin-top:8px;font-size:12px}.color-type .name{width:60px;height:30px;float:left;display:flex;justify-content:center;align-items:center;color:#999;background:#252930}.color-type .value{flex:1;height:30px;min-width:100px;padding:0 12px;border:0;color:#fff;background:#2e333a;box-sizing:border-box}
 </style>
