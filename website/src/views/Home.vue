@@ -297,19 +297,42 @@ export default {
     },
 
     async submit() {
-      if (!this.icon || !this.contract) return
+      // if (!this.icon || !this.contract) return
+      if (!this.contract) return
       console.log('this.contract',this.contract);
       const content = {
         icon: this.icon,
-        color: this.color === '#f9f9f9' ? null : this.color,
+        // color: this.color === '#f9f9f9' ? null : this.color,
+        // color: [],
+        // initials: [],
         // initials: this.initials ? this.initials : `${this.$near.user.accountId}`.substring(0, 2),
       }
 
+      // // Send to NEAR
+      // const res = await this.contract.set(
+      //   content,
+      //   '300000000000000',
+      //   this.selected.amount,
+      // )
+      // console.log('RES', res);
+
+      // // Send to NEAR
+      // const res = await this.contract.register(
+      //   {},
+      //   // content,
+      //   '300000000000000',
+      //   // this.selected.amount,
+      //   '266000000000000000000000'
+      //   // 263310000000000000000000
+      // )
+      // console.log('RES', res);
+
       // Send to NEAR
-      const res = await this.contract.set(
+      const res = await this.contract.set2(
         content,
         '300000000000000',
-        this.selected.amount,
+        0
+        // this.selected.amount,
       )
       console.log('RES', res);
 

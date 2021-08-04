@@ -67,12 +67,9 @@ export class VueNear {
   }
 
   async loginAccount() {
-    if (this.user && this.user.isSignedIn()) return this.user
+    // if (this.user && this.user.isSignedIn()) return this.user
     const appTitle = this.config.appTitle || 'NEAR'
     await this.user.requestSignIn(this.config.contractName, appTitle)
-
-    // returns full access key?! CAREFUL!
-    // await this.user.requestSignIn('')
 
     // re-load account
     return this.loadAccount()

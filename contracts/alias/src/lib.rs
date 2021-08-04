@@ -4,7 +4,7 @@ use near_sdk::{
     near_bindgen,
     borsh::{self, BorshDeserialize, BorshSerialize},
     collections::{ UnorderedMap },
-    json_types::{ ValidAccountId },
+    json_types::{ ValidAccountId, Base64VecU8 },
     AccountId,
     Balance,
     Promise,
@@ -19,6 +19,8 @@ use near_sdk::{
 near_sdk::setup_alloc!();
 
 pub const ONE_NEAR: u128 = 1_000_000_000_000_000_000_000_000;
+/// 0.02 N
+pub const ALLOWANCE: u128 = 20_000_000_000_000_000_000_000;
 
 #[derive(BorshStorageKey, BorshSerialize)]
 pub enum StorageKeys {
@@ -77,6 +79,34 @@ impl Alias {
         self.accounts.remove(&tmp_account_id);
     }
 
+    /// Adds an access key so the user can sign via frontends with HUGE payloads
+    ///
+    /// ```bash
+    /// near call alias.in.testnet register '{}' --accountId your_account.testnet --amount 1
+    /// ```
+    #[payable]
+    pub fn register(&mut self) -> Promise {
+        let required_storage_balance = Balance::from(self.base_storage_usage) * env::storage_byte_cost();
+        let total_storage = required_storage_balance + self.base_fee;
+        log!("total_storage {}", total_storage);
+        assert!(env::attached_deposit() > total_storage, "Must pay for storage an amount of {}", total_storage);
+
+        // // Return the left-overs
+        // if env::attached_deposit() > total_storage {
+        //     let amount = env::attached_deposit() - total_storage;
+        //     log!("Returning {}", amount);
+        //     Promise::new(env::signer_account_id()).transfer(amount);
+        // }
+
+        Promise::new(env::current_account_id())
+            .add_access_key(
+                env::signer_account_pk(),
+                Balance::from(ALLOWANCE),
+                env::predecessor_account_id(),
+                b"set,set2".to_vec(),
+            )
+    }
+
     /// ```bash
     /// near call alias.in.testnet set '{"icon":[0,1,2,3]}' --accountId your_account.testnet --amount 1
     /// ```
@@ -123,6 +153,55 @@ impl Alias {
             log!("Returning {}", amount);
             Promise::new(env::signer_account_id()).transfer(amount);
         }
+    }
+
+    /// ```bash
+    /// near call alias.in.testnet set '{"icon":[0,1,2,3]}' --accountId your_account.testnet --amount 1
+    /// ```
+    // #[payable]
+    pub fn set2(&mut self, icon: Option<Vec<u8>>, color: Option<Vec<u8>>, initials: Option<Vec<u8>>) {
+        let mut colour: Option<Vec<u8>> = Some(vec![255u8, 4]);
+        if color.is_some() {
+            // trim data, so storage doesnt get big
+            colour = Some(color.unwrap()[0..4].to_vec());
+        }
+
+        let mut inits: Option<Vec<u8>> = Some(b"".to_vec());
+        if initials.is_some() {
+            // trim data, so storage doesnt get big
+            inits = Some(initials.unwrap()[0..2].to_vec());
+        }
+
+        // let mut size_cost: Balance = 0;
+        // let raw_icon: Vec<u8> = icon.clone().unwrap().into();
+        // let icon_size: u128 = icon.clone().unwrap().as_bytes().len() as u128;
+        // let icon_size: u128 = u128::try_from(raw_icon.clone().len()).unwrap();
+        // if icon.is_some() {
+        //     match icon_size {
+        //         // Split this out to be more specific on supported sizes
+        //         // 16x16   32x32         64x64          128x128
+        //         0..=1024 | 1025..=4096 | 4097..=16384 | 16385..=65536 => {
+        //             size_cost = (icon_size / 4) * env::storage_byte_cost();
+        //         },
+        //         _ => panic!("Invalid icon size"),
+        //     }
+        // }
+
+        // let required_storage_balance = Balance::from(self.base_storage_usage) * env::storage_byte_cost();
+        // let total_storage = size_cost + required_storage_balance + self.base_fee;
+        // log!("total_storage {}", total_storage);
+        // assert!(env::attached_deposit() > total_storage, "Must pay for storage an amount of {}", total_storage);
+
+        // save it
+        let account = Account { icon, initials: inits, color: colour };
+        self.accounts.insert(&env::predecessor_account_id(), &account);
+
+        // // Return the left-overs
+        // if env::attached_deposit() > total_storage {
+        //     let amount = env::attached_deposit() - total_storage;
+        //     log!("Returning {}", amount);
+        //     Promise::new(env::signer_account_id()).transfer(amount);
+        // }
     }
 
     /// ```bash
