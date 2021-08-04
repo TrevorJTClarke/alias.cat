@@ -307,9 +307,9 @@ import {
   RadioGroupOption,
   Switch,
 } from '@headlessui/vue'
-import Loader from '../components/ui/Loader'
-import Hr from '../components/ui/Hr'
-import NearToken from '../components/ui/NearToken'
+import Loader from '../components/Loader'
+import Hr from '../components/Hr'
+import NearToken from '../components/NearToken'
 
 const steps = [
   { id: 1, title: 'Setup' },

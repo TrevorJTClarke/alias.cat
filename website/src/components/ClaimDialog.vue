@@ -43,7 +43,7 @@
 
 <script>
 import { ref } from 'vue'
-import NearToken from '@/components/ui/NearToken'
+import NearToken from '@/components/NearToken'
 import { Dialog, DialogOverlay, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { SparklesIcon } from '@heroicons/vue/outline'
 

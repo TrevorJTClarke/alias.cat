@@ -120,11 +120,11 @@
 
 <script>
 import humanizeDuration from 'humanize-duration'
-import NearToken from '@/components/ui/NearToken'
-import BidDialog from '@/components/ui/BidDialog'
-import CancelDialog from '@/components/ui/CancelDialog'
-import ClaimDialog from '@/components/ui/ClaimDialog'
-import RevealDialog from '@/components/ui/RevealDialog'
+import NearToken from '@/components/NearToken'
+import BidDialog from '@/components/BidDialog'
+import CancelDialog from '@/components/CancelDialog'
+import ClaimDialog from '@/components/ClaimDialog'
+import RevealDialog from '@/components/RevealDialog'
 
 // TODO: Remove -- testing only
 const revealBlockOffset = 1000000
