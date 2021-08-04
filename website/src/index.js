@@ -29,7 +29,7 @@ app.use(router)
 app.use(VueNear, {
   env,
   config: {
-    appTitle: '',
+    appTitle: 'Alias.cat',
     contractName: contractIds.alias
   }
 })
